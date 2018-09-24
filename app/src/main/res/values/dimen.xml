@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="element_half_little_margin">4dp</dimen>
+    <dimen name="element_half_margin">8dp</dimen>
+    <dimen name="element_margin">16dp</dimen>
+    <dimen name="element_double_margin">32dp</dimen>
+
+    <dimen name="title_toolbar">15sp</dimen>
+    <dimen name="subttitle_toolbar">11sp</dimen>
+
+    <dimen name="card_view_margin">8dp</dimen>
+    <dimen name="card_view_half_margin">4dp</dimen>
+    <dimen name="card_view_padding">16dp</dimen>
+    <dimen name="card_view_half_padding">8dp</dimen>
+
+</resources>
