@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.sol.estudo.zigzagcrosswordpuzzle.R;
 import com.sol.estudo.zigzagcrosswordpuzzle.databinding.LetterAdapterDataBinding;
 
@@ -15,8 +16,10 @@ import estudio_sol.zig_zag_crossword_puzzle.model.Label;
 
 public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.CrosswordViewHolder> {
 
+    //private MutableLiveData<List<Label>> crosswordLabels;
     private List<? extends Label> crosswords;
     private Context context;
+    CrosswordViewHolder holder;
 
     public CrosswordAdapter(final Context context, final List<? extends Label>  crosswords) {
         this.context = context;
@@ -42,6 +45,11 @@ public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.Cros
         holder.binding.labelText.setText(label.getLetter());
 
         holder.binding.setLetter(label);
+    }
+
+    public void setCrosswordsList(final List<? extends Label> crosswordsList) {
+        this.crosswords = crosswordsList;
+        notifyDataSetChanged();
     }
 
     @Override

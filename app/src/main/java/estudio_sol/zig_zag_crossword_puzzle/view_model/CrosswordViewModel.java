@@ -13,6 +13,12 @@ public class CrosswordViewModel extends BaseObservable {
 
     private Context context;
 
+    List<String> index;
+    List<String> searchItens;
+    String queryUpperCase;
+    char[] itens;
+    List<String> listIndex;
+
     private List<String> letters = Arrays.asList(
             "W", "S", "I", "A", "L", "C", "E", "O", "I", "V",
             "V", "A", "L", "P", "A", "L", "H", "E", "T", "A",
@@ -35,26 +41,110 @@ public class CrosswordViewModel extends BaseObservable {
         labels = new ArrayList();
     }
 
-    public boolean getFilter(final String query) {
+    public List<String> getFilter(final String query) {
 
         String queryUpperCase = query.toUpperCase();
-        List<String> searchItens = Arrays.asList(queryUpperCase.split("\\s*,\\s*"));
-        char[] itens = searchItens.get(0).split(" ")[0].toCharArray();
 
-//        int count = 0;
-//        for (int line = 0; line < 10; line++) {
-//            for (int column = 0; column < 10; column++) {
-//                if (matrixLetters[line][column].getLetter() == searchItens.get(count)){
-//
-//                }
-//                count++;
-//            }
-//        }
+        searchItens = Arrays.asList(queryUpperCase.split("\\s*,\\s*"));
+        itens = searchItens.get(0).split(" ")[0].toCharArray();
 
-        return false;
+        searchItens = new ArrayList<>();
+        for (char item : itens) {
+            searchItens.add(String.valueOf(item));
+        }
+        
+        listIndex = new ArrayList<>();
+
+            for (int line = 0; line < 10; line ++) {
+                for (int column = 0; column < 10; column++) {
+
+                    verifyWordRightDown(column, line, itens.length);
+
+                    if (verifyWordRightDown(column, line, itens.length) != null) {
+                        listIndex.addAll(verifyWordRightDown(column, line, itens.length));
+                    } else if (verifyWordDownRight(column, line, itens.length) != null) {
+                        listIndex.addAll(verifyWordDownRight(column, line, itens.length));
+                    }
+
+                }
+            }
+
+        return listIndex;
     }
 
-    public List<Label> getLabels() {
+    private List<String> verifyWordDownRight(int column, int line, int quantLetter) {
+        int step = 0;
+        int count1 = 0;
+        int count2 = 0;
+        index = new ArrayList<>();
+        boolean goDown = true;
+
+        do {
+            if (column < 10 & line < 10) {
+                if (matrixLetters[column][line].getLetter().equals(String.valueOf(itens[step]))) {
+
+                    index.add(String.valueOf(column) + ":" + String.valueOf(line));
+
+                    count1++;
+                    count2++;
+                } else {
+                    break;
+                }
+
+                if (goDown == true) {
+                    line++;
+                    goDown = false;
+                } else {
+                    column++;
+                    goDown = true;
+                }
+
+                step++;
+            } else {
+                break;
+            }
+        } while (step < quantLetter);
+
+        return index.size() == itens.length ? index : null ;
+    }
+
+    private List<String> verifyWordRightDown(int column, int line, int quantLetter) {
+        int step = 0;
+        int count1 = 0;
+        int count2 = 0;
+        index = new ArrayList<>();
+        boolean goRight = true;
+
+        do {
+            if (column < 10 & line < 10) {
+                if (matrixLetters[column][line].getLetter().equals(String.valueOf(itens[step]))) {
+
+                    index.add(String.valueOf(column) + ":" + String.valueOf(line));
+
+                    count1++;
+                    count2++;
+                } else {
+                    break;
+                }
+
+                    if (goRight == true) {
+                        column++;
+                        goRight = false;
+                    } else {
+                        line++;
+                        goRight = true;
+                    }
+                    step++;
+            } else {
+                break;
+            }
+        } while (step < quantLetter);
+
+        return index.size() == itens.length ? index : null ;
+    }
+
+
+    public List<Label> getFirstLabels() {
         int count = 0;
         for (int line = 0; line < 10; line++) {
             for (int column = 0; column < 10; column++) {
@@ -69,6 +159,18 @@ public class CrosswordViewModel extends BaseObservable {
             count++;
         }
 
+        return labels;
+    }
+    
+    public List<Label> getLabelsAfterSearch(Label[][] matrixLetters) {
+        List<Label> labels = new ArrayList<>();
+
+        for (int line = 0; line < 10; line++) {
+            for (int column = 0; column < 10; column++) {
+               labels.add(matrixLetters[column][line]);
+            }
+        }
+        
         return labels;
     }
 }
