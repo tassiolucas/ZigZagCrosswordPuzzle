@@ -1,23 +1,23 @@
 package estudio_sol.zig_zag_crossword_puzzle.view_model;
 
-import android.content.Context;
-import android.databinding.BaseObservable;
-
+import android.app.Application;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.AndroidViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import estudio_sol.zig_zag_crossword_puzzle.model.Label;
 
-public class CrosswordViewModel extends BaseObservable {
+public class CrosswordViewModel extends AndroidViewModel {
 
-    private Context context;
-
-    List<String> index;
-    List<String> searchItens;
-    String queryUpperCase;
-    char[] itens;
-    List<String> listIndex;
+    private MutableLiveData<List<Label>> labelsListObservable;
+    private char[] itens;
+    private List<String> index;
+    private List<String> searchItens;
+    private List<String> listIndex;
+    public List<Label> labels;
+    public Label[][] matrixLetters;
 
     private List<String> letters = Arrays.asList(
             "W", "S", "I", "A", "L", "C", "E", "O", "I", "V",
@@ -32,19 +32,20 @@ public class CrosswordViewModel extends BaseObservable {
             "F", "P", "E", "Q", "T", "A", "M", "L", "O", "J"
     );
 
-    public Label[][] matrixLetters;
-    public List<Label> labels;
+    public CrosswordViewModel(Application application) {
+        super(application);
+        this.matrixLetters = new Label[10][10];
+        this.labels = new ArrayList();
+        this.labelsListObservable = new MutableLiveData<>();
+    }
 
-    public CrosswordViewModel(Context context) {
-        this.context = context;
-        matrixLetters = new Label[10][10];
-        labels = new ArrayList();
+    public void setLabels(List<Label> labels) {
+        this.labelsListObservable.setValue(labels);
     }
 
     public List<String> getFilter(final String query) {
 
         String queryUpperCase = query.toUpperCase();
-
         searchItens = Arrays.asList(queryUpperCase.split("\\s*,\\s*"));
         itens = searchItens.get(0).split(" ")[0].toCharArray();
 
@@ -74,19 +75,13 @@ public class CrosswordViewModel extends BaseObservable {
 
     private List<String> verifyWordDownRight(int column, int line, int quantLetter) {
         int step = 0;
-        int count1 = 0;
-        int count2 = 0;
         index = new ArrayList<>();
         boolean goDown = true;
 
         do {
             if (column < 10 & line < 10) {
                 if (matrixLetters[column][line].getLetter().equals(String.valueOf(itens[step]))) {
-
                     index.add(String.valueOf(column) + ":" + String.valueOf(line));
-
-                    count1++;
-                    count2++;
                 } else {
                     break;
                 }
@@ -110,19 +105,13 @@ public class CrosswordViewModel extends BaseObservable {
 
     private List<String> verifyWordRightDown(int column, int line, int quantLetter) {
         int step = 0;
-        int count1 = 0;
-        int count2 = 0;
         index = new ArrayList<>();
         boolean goRight = true;
 
         do {
             if (column < 10 & line < 10) {
                 if (matrixLetters[column][line].getLetter().equals(String.valueOf(itens[step]))) {
-
                     index.add(String.valueOf(column) + ":" + String.valueOf(line));
-
-                    count1++;
-                    count2++;
                 } else {
                     break;
                 }
@@ -143,9 +132,10 @@ public class CrosswordViewModel extends BaseObservable {
         return index.size() == itens.length ? index : null ;
     }
 
-
     public List<Label> getFirstLabels() {
         int count = 0;
+        matrixLetters = new Label[10][10];
+
         for (int line = 0; line < 10; line++) {
             for (int column = 0; column < 10; column++) {
                 matrixLetters[column][line] = new Label(letters.get(count));
@@ -153,10 +143,9 @@ public class CrosswordViewModel extends BaseObservable {
             }
         }
 
-        count = 0;
+        labels = new ArrayList<>();
         for (String letter : letters) {
             labels.add(new Label(letter));
-            count++;
         }
 
         return labels;
@@ -172,5 +161,9 @@ public class CrosswordViewModel extends BaseObservable {
         }
         
         return labels;
+    }
+
+    public LiveData<List<Label>> getLabelsListObservable() {
+        return labelsListObservable;
     }
 }

@@ -1,6 +1,11 @@
 package estudio_sol.zig_zag_crossword_puzzle.view.ui.activity;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.Observer;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,20 +16,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.sol.estudo.zigzagcrosswordpuzzle.R;
 import com.sol.estudo.zigzagcrosswordpuzzle.databinding.CrosswordDataBinding;
-
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import estudio_sol.zig_zag_crossword_puzzle.model.Label;
 import estudio_sol.zig_zag_crossword_puzzle.view.ui.adapter.CrosswordAdapter;
 import estudio_sol.zig_zag_crossword_puzzle.view_model.CrosswordViewModel;
 
-public class CrosswordActivity extends AppCompatActivity {
+public class CrosswordActivity extends AppCompatActivity implements LifecycleOwner {
+
+    private final LifecycleRegistry registry = new LifecycleRegistry(this);
 
     @Nullable @BindView(R.id.toolbar)
     protected Toolbar toolbar;
@@ -48,7 +52,7 @@ public class CrosswordActivity extends AppCompatActivity {
 
         setToolbar(getString(R.string.app_title_toolbar), getString(R.string.app_subtitle_toolbar), false);
 
-        viewModel = new CrosswordViewModel(this);
+        viewModel = new CrosswordViewModel(getApplication());
 
         crosswordAdapter = new CrosswordAdapter(this, viewModel.getFirstLabels());
 
@@ -59,6 +63,8 @@ public class CrosswordActivity extends AppCompatActivity {
         binding.setCrossword(viewModel);
 
         handleSearch();
+
+        observe(crosswordAdapter);
     }
 
     private void handleSearch() {
@@ -72,18 +78,25 @@ public class CrosswordActivity extends AppCompatActivity {
                     viewModel.matrixLetters[Integer.valueOf(letterIndex[0])][Integer.valueOf(letterIndex[1])].setMarked(true);
                 }
 
-                crosswordAdapter = new CrosswordAdapter(getApplicationContext(), viewModel.getLabelsAfterSearch(viewModel.matrixLetters));
-
-                binding.recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 10));
-
-                binding.setCrossword(viewModel);
-
+                viewModel.setLabels(viewModel.getLabelsAfterSearch(viewModel.matrixLetters));
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //viewModel.clearLabels();
+                viewModel.setLabels(viewModel.getFirstLabels());
+            }
+
+            @Override
+            public void onSearchViewClosed() {
             }
         });
     }
@@ -108,4 +121,18 @@ public class CrosswordActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(homeAsUpEnable);
     }
 
+    public void observe(final CrosswordAdapter crosswordAdapter) {
+        viewModel.getLabelsListObservable().observe(this, new Observer<List<Label>>() {
+            @Override
+            public void onChanged(@Nullable List<Label> labels) {
+                crosswordAdapter.setCrosswordsList(labels);
+            }
+        });
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return registry;
+    }
 }
