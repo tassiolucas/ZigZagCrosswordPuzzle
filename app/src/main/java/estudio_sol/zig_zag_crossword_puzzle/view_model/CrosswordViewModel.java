@@ -11,6 +11,7 @@ import estudio_sol.zig_zag_crossword_puzzle.model.Label;
 
 public class CrosswordViewModel extends AndroidViewModel {
 
+    // Inicializa todos os modelos
     private MutableLiveData<List<Label>> labelsListObservable;
     private char[] itens;
     private List<String> index;
@@ -33,6 +34,7 @@ public class CrosswordViewModel extends AndroidViewModel {
             "F", "P", "E", "Q", "T", "A", "M", "L", "O", "J"
     );
 
+    // Inicializa o modelo que irá popular o Caça-palavras na tela
     public CrosswordViewModel(Application application) {
         super(application);
         this.matrixLetters = new Label[10][10];
@@ -44,8 +46,10 @@ public class CrosswordViewModel extends AndroidViewModel {
         this.labelsListObservable.setValue(labels);
     }
 
+    // Faz o filtro a partir da palavra pesquisada
     public List<String> getFilter(final String query) {
 
+        // Procura recortar a palavra, colocando-a em caixa alta e dividir as letras em lista
         String queryUpperCase = query.toUpperCase();
         searchItens = Arrays.asList(queryUpperCase.split("\\s*,\\s*"));
         itens = searchItens.get(0).split(" ")[0].toCharArray();
@@ -56,15 +60,17 @@ public class CrosswordViewModel extends AndroidViewModel {
         }
         
         listIndex = new ArrayList<>();
-
+            // Varre a matriz em busca da palavra digitada
             for (int line = 0; line < 10; line ++) {
                 for (int column = 0; column < 10; column++) {
 
                     verifyWordRightDown(column, line, itens.length);
 
+                    // Verifica a palavra digitada tando da direita para baixo,
+                    // quanto de baixo para a direita.
                     if (verifyWordRightDown(column, line, itens.length) != null) {
                         listIndex.addAll(verifyWordRightDown(column, line, itens.length));
-                        occurrences++;
+                        occurrences++; // Registra o contador da ocorrência
                     } else if (verifyWordDownRight(column, line, itens.length) != null) {
                         listIndex.addAll(verifyWordDownRight(column, line, itens.length));
                         occurrences++;
@@ -76,6 +82,8 @@ public class CrosswordViewModel extends AndroidViewModel {
         return listIndex;
     }
 
+    // Faz a procura até o tamanho da palavra procurada chegar ao fim
+    // Pesquisa de baixo para a direita
     private List<String> verifyWordDownRight(int column, int line, int quantLetter) {
         int step = 0;
         index = new ArrayList<>();
@@ -106,6 +114,8 @@ public class CrosswordViewModel extends AndroidViewModel {
         return index.size() == itens.length ? index : null ;
     }
 
+    // Faz a procura até o tamanho da palavra procurada chegar ao fim
+    // Pesquisa da direita para baixo
     private List<String> verifyWordRightDown(int column, int line, int quantLetter) {
         int step = 0;
         index = new ArrayList<>();
@@ -135,6 +145,8 @@ public class CrosswordViewModel extends AndroidViewModel {
         return index.size() == itens.length ? index : null ;
     }
 
+    // Procura popular inicialmente a matrix e retornar lista das letras do caça-palavras
+    // sem marcação de destaque
     public List<Label> getFirstLabels() {
         int count = 0;
         matrixLetters = new Label[10][10];
@@ -153,7 +165,8 @@ public class CrosswordViewModel extends AndroidViewModel {
 
         return labels;
     }
-    
+
+    // Procura popular a lista de letras do caça-palavras já marcada após a procura
     public List<Label> getLabelsAfterSearch(Label[][] matrixLetters) {
         List<Label> labels = new ArrayList<>();
 
@@ -166,14 +179,17 @@ public class CrosswordViewModel extends AndroidViewModel {
         return labels;
     }
 
+    // Retorna os itens dinâmicos e observáveis que estão tela
     public LiveData<List<Label>> getLabelsListObservable() {
         return labelsListObservable;
     }
 
+    // Retorna o número das ocorrências na procura da palavra
     public int getOccurrences() {
         return occurrences;
     }
 
+    // Reseta o número das ocorrências na procura da palavra
     public void resetOccurrences() {
         this.occurrences = 0;
     }

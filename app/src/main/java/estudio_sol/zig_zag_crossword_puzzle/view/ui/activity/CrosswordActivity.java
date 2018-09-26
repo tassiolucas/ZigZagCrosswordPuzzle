@@ -30,6 +30,7 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
 
     private final LifecycleRegistry registry = new LifecycleRegistry(this);
 
+    // Combina os componentes da tela com os objetos programáveis dos itens
     @Nullable @BindView(R.id.toolbar)
     protected Toolbar toolbar;
     @Nullable @BindView(R.id.search_view)
@@ -41,10 +42,12 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
     @Nullable @BindView(R.id.search_results)
     protected TextView searchResults;
 
+    // Define os objetos do modelo, do adapter e da combinação dos componentes da tela
     private CrosswordDataBinding binding;
     private CrosswordViewModel viewModel;
     private CrosswordAdapter crosswordAdapter;
 
+    // Inicializa o programa, inicializando e populando o modelo e o adapter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,16 +72,17 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
         observe(crosswordAdapter);
     }
 
+    // Método que gerencia a procura no aplicativo, e a abertura e fechamento do item da procura
     private void handleSearch() {
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 List<String> wordIndex = viewModel.getFilter(query);
 
-                if (wordIndex.size() > 0 | viewModel.getOccurrences() > 1) {
+                if (wordIndex.size() > 0 & viewModel.getOccurrences() > 1) {
                     searchResults.setText(viewModel.getOccurrences() + " ocorrências foram encontradas de '" + query + "'");
                     searchResults.setVisibility(View.VISIBLE);
-                } else if (wordIndex.size() > 0 | viewModel.getOccurrences() > 0) {
+                } else if (wordIndex.size() > 0 & viewModel.getOccurrences() == 1) {
                     searchResults.setText(viewModel.getOccurrences() + " ocorrência foi encontrada de '" + query + "'");
                     searchResults.setVisibility(View.VISIBLE);
                 } else {
@@ -115,6 +119,7 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
         });
     }
 
+    // Método que insere item da procura na barra superior do aplicativo
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -124,6 +129,7 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
         return true;
     }
 
+    // Metodo que inicaliza a barra de ferramentas com o título e subtítulo do aplicativo
     protected void setToolbar(final String title, final String subtitle, boolean homeAsUpEnable) {
         toolbar.setTitle("");
         toolbarTitle.setText(title);
@@ -135,6 +141,7 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
         getSupportActionBar().setDisplayHomeAsUpEnabled(homeAsUpEnable);
     }
 
+    // Observa as mudanças dinâmicas nos itens do Caça-palavras ao longo das pesquisas
     public void observe(final CrosswordAdapter crosswordAdapter) {
         viewModel.getLabelsListObservable().observe(this, new Observer<List<Label>>() {
             @Override

@@ -17,11 +17,13 @@ public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.Cros
     private List<? extends Label> crosswords;
     private Context context;
 
+    // Inicializa o adapter que será responsável pelos itens dinâmicos na tela do Caça-palavras
     public CrosswordAdapter(final Context context, final List<? extends Label>  crosswords) {
         this.context = context;
         this.crosswords = crosswords;
     }
 
+    // Combina os itens dinâmicos com o item de exemplo que será reutilizado no Caça-palavras
     @Override
     public CrosswordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -34,6 +36,8 @@ public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.Cros
         return new CrosswordViewHolder(binding);
     }
 
+    // Método que gira e faz a combinação dos componentes dinâmicos da tela com os objetos
+    // inicializados que popularão esses mesmos componetes da tela
     @Override
     public void onBindViewHolder(CrosswordViewHolder holder, int position) {
         holder.binding.setLetter(crosswords.get(position));
@@ -41,21 +45,25 @@ public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.Cros
         holder.binding.labelText.setText(crosswords.get(position).getLetter());
 
         if (crosswords.get(position).isMarked()) {
-            holder.binding.labelText.setTextColor(ContextCompat.getColor(context, R.color.primary));
+            holder.binding.labelText.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            holder.binding.labelText.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
             holder.binding.labelText.setTypeface(null, Typeface.BOLD);
         }
     }
 
+    // Método que atualiza os itens dinâmicos do adapter
     public void setCrosswordsList(final List<? extends Label> crosswordsList) {
         this.crosswords = crosswordsList;
         notifyDataSetChanged();
     }
 
+    // Método que conta quantos itens serão populados dinâmicamente no adapter
     @Override
     public int getItemCount() {
         return crosswords.size();
     }
 
+    // Classe que mantém salvos os itens dinâmicos criados
     class CrosswordViewHolder extends RecyclerView.ViewHolder {
         public final LetterAdapterDataBinding binding;
 

@@ -1,7 +1,7 @@
 package estudio_sol.zig_zag_crossword_puzzle.model;
 
 public class Label {
-
+    // Classe que instancia-rá os itens do Caça-palavras, suas marcações na matriz e suas letras
     String letter;
     boolean marked = false;
 
