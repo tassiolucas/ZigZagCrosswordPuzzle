@@ -47,6 +47,7 @@ public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.Cros
         if (crosswords.get(position).isMarked()) {
             holder.binding.labelText.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             holder.binding.labelText.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            holder.binding.labelLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
             holder.binding.labelText.setTypeface(null, Typeface.BOLD);
         }
     }
