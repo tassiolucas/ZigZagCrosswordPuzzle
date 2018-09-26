@@ -38,6 +38,8 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
     protected TextView toolbarTitle;
     @Nullable @BindView(R.id.toolbar_subtitle)
     protected TextView toolbarSubtitle;
+    @Nullable @BindView(R.id.search_results)
+    protected TextView searchResults;
 
     private CrosswordDataBinding binding;
     private CrosswordViewModel viewModel;
@@ -73,6 +75,17 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
             public boolean onQueryTextSubmit(String query) {
                 List<String> wordIndex = viewModel.getFilter(query);
 
+                if (wordIndex.size() > 0 | viewModel.getOccurrences() > 1) {
+                    searchResults.setText(viewModel.getOccurrences() + " ocorrências foram encontradas de '" + query + "'");
+                    searchResults.setVisibility(View.VISIBLE);
+                } else if (wordIndex.size() > 0 | viewModel.getOccurrences() > 0) {
+                    searchResults.setText(viewModel.getOccurrences() + " ocorrência foi encontrada de '" + query + "'");
+                    searchResults.setVisibility(View.VISIBLE);
+                } else {
+                    searchResults.setText(viewModel.getOccurrences() + " ocorrência foi encontrada de '" + query + "'");
+                    searchResults.setVisibility(View.VISIBLE);
+                }
+
                 for (String index : wordIndex) {
                     String[] letterIndex = index.split(":");
                     viewModel.matrixLetters[Integer.valueOf(letterIndex[0])][Integer.valueOf(letterIndex[1])].setMarked(true);
@@ -91,8 +104,9 @@ public class CrosswordActivity extends AppCompatActivity implements LifecycleOwn
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                //viewModel.clearLabels();
+                viewModel.resetOccurrences();
                 viewModel.setLabels(viewModel.getFirstLabels());
+                searchResults.setVisibility(View.INVISIBLE);
             }
 
             @Override

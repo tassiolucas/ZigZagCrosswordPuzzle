@@ -16,8 +16,6 @@ public class CrosswordAdapter extends RecyclerView.Adapter<CrosswordAdapter.Cros
 
     private List<? extends Label> crosswords;
     private Context context;
-    CrosswordViewHolder holder;
-
 
     public CrosswordAdapter(final Context context, final List<? extends Label>  crosswords) {
         this.context = context;

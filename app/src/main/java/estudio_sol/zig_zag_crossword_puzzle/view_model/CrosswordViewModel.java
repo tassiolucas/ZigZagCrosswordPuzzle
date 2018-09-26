@@ -18,6 +18,7 @@ public class CrosswordViewModel extends AndroidViewModel {
     private List<String> listIndex;
     public List<Label> labels;
     public Label[][] matrixLetters;
+    private int occurrences = 0;
 
     private List<String> letters = Arrays.asList(
             "W", "S", "I", "A", "L", "C", "E", "O", "I", "V",
@@ -63,8 +64,10 @@ public class CrosswordViewModel extends AndroidViewModel {
 
                     if (verifyWordRightDown(column, line, itens.length) != null) {
                         listIndex.addAll(verifyWordRightDown(column, line, itens.length));
+                        occurrences++;
                     } else if (verifyWordDownRight(column, line, itens.length) != null) {
                         listIndex.addAll(verifyWordDownRight(column, line, itens.length));
+                        occurrences++;
                     }
 
                 }
@@ -165,5 +168,13 @@ public class CrosswordViewModel extends AndroidViewModel {
 
     public LiveData<List<Label>> getLabelsListObservable() {
         return labelsListObservable;
+    }
+
+    public int getOccurrences() {
+        return occurrences;
+    }
+
+    public void resetOccurrences() {
+        this.occurrences = 0;
     }
 }
